@@ -136,3 +136,88 @@ with tab_voice:
                 st.success("Linguistic voice track conversion complete!")
                 # Standard audio player simulation asset
                 st.audio("https://w3schools.com")
+import streamlit as st
+import base64
+import requests
+
+# 1. PAGE CONFIGURATION & THEME STYLING
+st.set_page_config(
+    page_title="Aether Mind",
+    page_icon="🔮",
+    layout="wide"
+)
+
+# Deep blue dashboard styling with background image overlay
+background_image_url = "https://unsplash.com"
+custom_css = f"""
+<style>
+    .stApp {{
+        background: linear-gradient(rgba(10, 25, 47, 0.85), rgba(10, 25, 47, 0.95)), url("{background_image_url}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: #e2e8f0;
+    }}
+    section[data-testid="stSidebar"] {{ background-color: rgba(17, 34, 64, 0.9) !important; border-right: 1px solid #64ffda; }}
+    h1, h2, h3 {{ color: #64ffda !important; }}
+    .stTextArea textarea, .stTextInput input {{ background-color: rgba(2, 12, 27, 0.7) !important; color: #ffffff !important; border: 1px solid #233554 !important; }}
+</style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
+
+# 2. SIDEBAR CONTROL PANEL
+with st.sidebar:
+    st.title("🔮 Aether Mind")
+    st.markdown("---")
+    st.subheader("⚙️ System Control Panel")
+    api_key = st.text_input("Enter Gemini API Key", type="password")
+    st.markdown("---")
+    st.info("Paste your free Google AI Studio key here to bring the dashboard to life!")
+
+# 3. MAIN WORKSPACE
+st.title("Aether Mind Multimodal AI Workspace")
+tab_chat, tab_image, tab_video = st.tabs(["💬 Ask AI Anything", "🖼️ Image Generation", "🎥 Video Generation"])
+
+# THE FIXED LIVE CHAT BRAIN (Using a secure container form)
+with tab_chat:
+    st.header("Direct Cognitive Query Engine")
+    
+    # We wrap the text area and button inside a form container to lock the text in place
+    with st.form(key="chat_form", clear_on_submit=False):
+        user_question = st.text_area("Type any question or instruction here:")
+        submit_button = st.form_submit_button(label="Ask Aether Mind Brain", type="primary")
+    
+    # This runs only when the form's submit button is actually clicked
+    if submit_button:
+        if not user_question.strip():
+            st.warning("Please type a message before sending!")
+        elif not api_key:
+            st.error("Please insert your Gemini API key in the sidebar to activate the brain.")
+        else:
+            with st.spinner("Thinking..."):
+                url = f"https://googleapis.com{api_key}"
+                headers = {'Content-Type': 'application/json'}
+                payload = {"contents": [{"parts":[{"text": user_question}]}]}
+                
+                try:
+                    response = requests.post(url, json=payload, headers=headers)
+                    if response.status_code == 200:
+                        # Correct pathway for extracting Google Gemini response text string
+                        ai_response = response.json()['candidates'][0]['content']['parts'][0]['text']
+                        st.success("Response Received:")
+                        st.write(ai_response)
+                    else:
+                        st.error(f"Error from Google servers. Code: {response.status_code}. Make sure your key is correct.")
+                except Exception as e:
+                    st.error("Connection failed. Make sure your internet is stable!")
+
+# TAB 2 & 3 PLACEHOLDERS FOR ASSETS
+with tab_image:
+    st.header("Text-to-Image Engine")
+    st.text_area("Describe the image to create:", key="img_box")
+    st.button("Generate Image Asset", key="img_btn")
+
+with tab_video:
+    st.header("Text-to-Video Engine")
+    st.text_area("Describe the motion sequence:", key="vid_box")
+    st.button("Generate Motion Asset", key="vid_btn")
