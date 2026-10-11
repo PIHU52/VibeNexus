@@ -4,7 +4,7 @@ import requests
 
 # 1. PAGE CONFIGURATION & SLESK BLUE THEME STYLING
 st.set_page_config(
-    page_title="AetherMind Studio",
+    page_title="VibeNexus",
     page_icon="🔮",
     layout="wide",
     initial_sidebar_state="expanded"
